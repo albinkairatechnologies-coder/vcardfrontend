@@ -38,7 +38,24 @@ export function useCardStore() {
   const [card, setCard] = useState(() => {
     try {
       const saved = localStorage.getItem('smartcard_editor')
-      return saved ? { ...DEFAULT_CARD, ...JSON.parse(saved) } : DEFAULT_CARD
+      if (!saved) return DEFAULT_CARD
+      const parsed = JSON.parse(saved)
+      // Clear stale localhost image URLs
+      if (
+        parsed.profilePhoto?.includes('localhost') ||
+        parsed.coverPhoto?.includes('localhost') ||
+        parsed.companyLogo?.includes('localhost') ||
+        parsed.virtualBg?.custom?.includes('localhost')
+      ) {
+        return {
+          ...DEFAULT_CARD, ...parsed,
+          profilePhoto: '',
+          coverPhoto: '',
+          companyLogo: '',
+          virtualBg: { ...(parsed.virtualBg || {}), custom: '' },
+        }
+      }
+      return { ...DEFAULT_CARD, ...parsed }
     } catch { return DEFAULT_CARD }
   })
 

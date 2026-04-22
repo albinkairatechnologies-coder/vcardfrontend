@@ -92,51 +92,51 @@ export default function ProfileEditor() {
     const safeLinks = Array.isArray(payload.links) ? payload.links : []
     const linkByType = (type) => safeLinks.find((l) => l.type === type)?.url || ''
     const metaByType = (type) => safeLinks.find((l) => l.type === type)?.url || ''
-    // Store only filenames in state — full URLs built at render time in CardPreview
+    const uploadsBase = 'https://kairatechnologies.co.in/demo/vcard/uploads/'
     const profileFile = safeLinks.find((l) => l.type === 'meta_profile')?.url || payload.photo || ''
     const coverFile   = safeLinks.find((l) => l.type === 'meta_cover')?.url || ''
     const logoFile    = safeLinks.find((l) => l.type === 'meta_logo')?.url || ''
     const vBgFile     = safeLinks.find((l) => l.type === 'meta_vBg_custom')?.url || ''
-    const linkLabel   = safeLinks.find((l) => l.type === 'custom')?.label || ''
-    const linkUrl     = safeLinks.find((l) => l.type === 'custom')?.url || ''
     const social      = ['twitter', 'instagram', 'threads', 'linkedin', 'facebook', 'youtube', 'snapchat', 'tiktok', 'twitch', 'yelp']
     const messaging   = ['whatsapp', 'signal', 'discord', 'skype', 'telegram']
     const business    = ['github', 'calendly']
-    const uploadsBase = 'https://kairatechnologies.co.in/demo/vcard/uploads/'
 
-    update('name',           metaByType('meta_name')           || payload.name    || '')
-    update('jobTitle',       payload.title                     || '')
-    update('department',     metaByType('meta_department')     || '')
-    update('accreditations', metaByType('meta_accreditations') || '')
-    update('companyName',    metaByType('meta_company')        || payload.company || '')
-    update('headline',       payload.bio                       || '')
-    // Store full URL so preview shows image immediately
-    update('profilePhoto',   profileFile ? `${uploadsBase}${profileFile}` : '')
-    update('coverPhoto',     coverFile   ? `${uploadsBase}${coverFile}`   : '')
-    update('companyLogo',    logoFile    ? `${uploadsBase}${logoFile}`    : '')
-    update('email',          metaByType('meta_email')          || payload.email   || '')
-    update('phone',          linkByType('phone'))
-    update('companyUrl',     linkByType('website'))
-    update('customLinkLabel', linkLabel)
-    update('customLink',     linkUrl)
-    update('address',        metaByType('meta_address')        || '')
-    update('leadSource',     metaByType('meta_leadSource')     || '')
-    update('leadTags',       metaByType('meta_leadTags')       || '')
-    update('followUpDate',   metaByType('meta_followUpDate')   || '')
-    update('meetingNote',    metaByType('meta_meetingNote')    || '')
-    update('ctaLabel',       metaByType('meta_ctaLabel')       || '')
-    update('ctaUrl',         metaByType('meta_ctaUrl')         || '')
-    update('themeColor',     metaByType('meta_themeColor')     || payload.theme   || '#6366f1')
+    const socialData = {}
+    social.forEach(key => { socialData[key] = linkByType(key) })
+    messaging.forEach(key => { socialData[key] = linkByType(key) })
+    business.forEach(key => { socialData[key] = linkByType(key) })
 
-    const vBgEnabled = metaByType('meta_vBg_enabled') === 'true'
-    const vBgPreset  = metaByType('meta_vBg_preset')  || ''
-    updateNested('virtualBg', 'enabled', vBgEnabled)
-    updateNested('virtualBg', 'preset',  vBgPreset)
-    updateNested('virtualBg', 'custom',  vBgFile ? `${uploadsBase}${vBgFile}` : '')
-
-    social.forEach((key)    => update(key, linkByType(key)))
-    messaging.forEach((key) => update(key, linkByType(key)))
-    business.forEach((key)  => update(key, linkByType(key)))
+    // Single batch update — one localStorage save with ALL fields including images
+    setAll({
+      name:           metaByType('meta_name')           || payload.name    || '',
+      jobTitle:       payload.title                     || '',
+      department:     metaByType('meta_department')     || '',
+      accreditations: metaByType('meta_accreditations') || '',
+      companyName:    metaByType('meta_company')        || payload.company || '',
+      headline:       payload.bio                       || '',
+      profilePhoto:   profileFile ? `${uploadsBase}${profileFile}` : '',
+      coverPhoto:     coverFile   ? `${uploadsBase}${coverFile}`   : '',
+      companyLogo:    logoFile    ? `${uploadsBase}${logoFile}`    : '',
+      email:          metaByType('meta_email')          || payload.email   || '',
+      phone:          linkByType('phone'),
+      companyUrl:     linkByType('website'),
+      customLinkLabel: safeLinks.find((l) => l.type === 'custom')?.label || '',
+      customLink:     linkByType('custom'),
+      address:        metaByType('meta_address')        || '',
+      leadSource:     metaByType('meta_leadSource')     || '',
+      leadTags:       metaByType('meta_leadTags')       || '',
+      followUpDate:   metaByType('meta_followUpDate')   || '',
+      meetingNote:    metaByType('meta_meetingNote')    || '',
+      ctaLabel:       metaByType('meta_ctaLabel')       || '',
+      ctaUrl:         metaByType('meta_ctaUrl')         || '',
+      themeColor:     metaByType('meta_themeColor')     || payload.theme   || '#6366f1',
+      virtualBg: {
+        enabled: metaByType('meta_vBg_enabled') === 'true',
+        preset:  metaByType('meta_vBg_preset')  || '',
+        custom:  vBgFile ? `${uploadsBase}${vBgFile}` : '',
+      },
+      ...socialData,
+    })
   }
 
   const toApiLinks = () => {
