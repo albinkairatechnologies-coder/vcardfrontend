@@ -53,7 +53,7 @@ export function useCardStore() {
 
   useEffect(() => {
     const { profilePhoto, coverPhoto, companyLogo, virtualBg, ...rest } = card
-    // Only save valid URLs: http(s) URLs, data: URLs, but never localhost or blob: URLs
+    // Save valid URLs: http(s) URLs (including server URLs), data: URLs, but never localhost or blob: URLs
     const isValidUrl = (url) => {
       if (!url || !url.trim()) return false
       if (url.startsWith('data:')) return true

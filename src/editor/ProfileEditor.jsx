@@ -94,10 +94,13 @@ export default function ProfileEditor() {
     const metaByType = (type) => safeLinks.find((l) => l.type === type)?.url || ''
     const baseUrl = import.meta.env.VITE_API_BASE?.replace('/api', '') || 'https://kairatechnologies.co.in/demo/vcard'
     const uploadsBase = `${baseUrl}/uploads/`
-    const profileFile = safeLinks.find((l) => l.type === 'meta_profile')?.url || payload.photo || ''
-    const coverFile   = safeLinks.find((l) => l.type === 'meta_cover')?.url || ''
-    const logoFile    = safeLinks.find((l) => l.type === 'meta_logo')?.url || ''
-    const vBgFile     = safeLinks.find((l) => l.type === 'meta_vBg_custom')?.url || ''
+    
+    // Handle profile photo: check meta_profile first, then main photo field
+    const profileFile = metaByType('meta_profile') || payload.photo || ''
+    const coverFile   = metaByType('meta_cover') || ''
+    const logoFile    = metaByType('meta_logo') || ''
+    const vBgFile     = metaByType('meta_vBg_custom') || ''
+    
     const social      = ['twitter', 'instagram', 'threads', 'linkedin', 'facebook', 'youtube', 'snapchat', 'tiktok', 'twitch', 'yelp']
     const messaging   = ['whatsapp', 'signal', 'discord', 'skype', 'telegram']
     const business    = ['github', 'calendly']
@@ -107,8 +110,10 @@ export default function ProfileEditor() {
     messaging.forEach(key => { socialData[key] = linkByType(key) })
     business.forEach(key => { socialData[key] = linkByType(key) })
 
+    // Construct full URLs for images
+    const constructImageUrl = (filename) => filename ? `${uploadsBase}${filename}` : ''
+    
     // Single batch update -- one localStorage save with ALL fields including images
-    // Ensure server URLs are properly constructed and saved
     const cardData = {
       name:           metaByType('meta_name')           || payload.name    || '',
       jobTitle:       payload.title                     || '',
@@ -116,9 +121,9 @@ export default function ProfileEditor() {
       accreditations: metaByType('meta_accreditations') || '',
       companyName:    metaByType('meta_company')        || payload.company || '',
       headline:       payload.bio                       || '',
-      profilePhoto:   profileFile ? `${uploadsBase}${profileFile}` : '',
-      coverPhoto:     coverFile   ? `${uploadsBase}${coverFile}`   : '',
-      companyLogo:    logoFile    ? `${uploadsBase}${logoFile}`    : '',
+      profilePhoto:   constructImageUrl(profileFile),
+      coverPhoto:     constructImageUrl(coverFile),
+      companyLogo:    constructImageUrl(logoFile),
       email:          metaByType('meta_email')          || payload.email   || '',
       phone:          linkByType('phone'),
       companyUrl:     linkByType('website'),
@@ -135,7 +140,7 @@ export default function ProfileEditor() {
       virtualBg: {
         enabled: metaByType('meta_vBg_enabled') === 'true',
         preset:  metaByType('meta_vBg_preset')  || '',
-        custom:  vBgFile ? `${uploadsBase}${vBgFile}` : '',
+        custom:  constructImageUrl(vBgFile),
       },
       ...socialData,
     }
