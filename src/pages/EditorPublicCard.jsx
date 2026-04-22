@@ -98,15 +98,6 @@ export default function EditorPublicCard() {
     const phone = Array.isArray(card.links) ? card.links.find((l) => l.type === 'phone')?.url || '' : ''
     const website = Array.isArray(card.links) ? card.links.find((l) => l.type === 'website')?.url || '' : ''
 
-    // Try native Contact Picker API (Android Chrome only)
-    if ('contacts' in navigator && 'ContactsManager' in window) {
-      try {
-        await navigator.contacts.select(['name', 'email', 'tel'], { multiple: false })
-        // API only reads, not writes — fall through to vcf
-      } catch {}
-    }
-
-    // Use Web Share API with vcf file (best for iOS + Android)
     const lines = [
       'BEGIN:VCARD', 'VERSION:3.0',
       `FN:${displayName || 'Contact'}`,
@@ -123,20 +114,28 @@ export default function EditorPublicCard() {
     const blob = new Blob([vcfContent], { type: 'text/vcard' })
     const file = new File([blob], `${(displayName || 'contact').replace(/\s+/g, '-').toLowerCase()}.vcf`, { type: 'text/vcard' })
 
-    // Try Web Share with file (Android Chrome — opens native contact import directly)
+    // Android Chrome — share vcf file directly opens native contact import
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
         await navigator.share({ files: [file], title: displayName })
         return
-      } catch {}
+      } catch (e) {
+        if (e.name !== 'AbortError') {
+          // fallthrough to download
+        } else {
+          return
+        }
+      }
     }
 
-    // Fallback: direct download (iOS Safari, desktop)
+    // iOS Safari — clicking an <a> with text/vcard href auto-prompts "Create New Contact"
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = file.name
+    document.body.appendChild(a)
     a.click()
+    document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
 
