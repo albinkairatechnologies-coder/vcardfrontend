@@ -62,7 +62,7 @@ export default function ProfileEditor() {
       data: {
         jobTitle: 'Sales Director',
         headline: 'Helping teams increase pipeline through smarter event networking.',
-        ctaLabel: 'Book a Meeting',
+        ctaLabel: 'Save Contact',
         leadSource: 'Conference Booth',
       },
     },
@@ -72,7 +72,7 @@ export default function ProfileEditor() {
       data: {
         jobTitle: 'Founder',
         headline: 'Building products that turn first conversations into lasting customers.',
-        ctaLabel: 'Schedule Intro Call',
+        ctaLabel: 'Save Contact',
         leadSource: 'Warm Referral',
       },
     },
@@ -82,7 +82,7 @@ export default function ProfileEditor() {
       data: {
         jobTitle: 'Business Consultant',
         headline: 'Strategy, systems, and execution support for scaling teams.',
-        ctaLabel: 'Request Proposal',
+        ctaLabel: 'Save Contact',
         leadSource: 'LinkedIn',
       },
     },

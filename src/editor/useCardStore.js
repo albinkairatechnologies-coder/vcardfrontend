@@ -44,10 +44,12 @@ export function useCardStore() {
 
   useEffect(() => {
     const { profilePhoto, coverPhoto, companyLogo, virtualBg, ...rest } = card
-    // Save only text fields — skip large base64 images to prevent localStorage overflow
     localStorage.setItem('smartcard_editor', JSON.stringify({
       ...rest,
-      virtualBg: { ...virtualBg, custom: '' },
+      profilePhoto: profilePhoto?.startsWith('http') ? profilePhoto : '',
+      coverPhoto: coverPhoto?.startsWith('http') ? coverPhoto : '',
+      companyLogo: companyLogo?.startsWith('http') ? companyLogo : '',
+      virtualBg: { ...virtualBg, custom: virtualBg?.custom?.startsWith('http') ? virtualBg.custom : '' },
     }))
   }, [card])
 
