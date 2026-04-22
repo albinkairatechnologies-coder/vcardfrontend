@@ -45,7 +45,7 @@ export default function CardBuilder() {
       setLinks(c.links || [])
       if (c.photo) {
         setExistingPhoto(c.photo)
-        setPhotoPreview(`http://localhost/smartcard/backend/uploads/${c.photo}`)
+        setPhotoPreview(`https://kairatechnologies.co.in/demo/vcard/uploads/${c.photo}`)
       }
     }).catch(() => {})
   }, []) // eslint-disable-line

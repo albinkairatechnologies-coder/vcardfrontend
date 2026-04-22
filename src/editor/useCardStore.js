@@ -43,7 +43,12 @@ export function useCardStore() {
   })
 
   useEffect(() => {
-    localStorage.setItem('smartcard_editor', JSON.stringify(card))
+    const { profilePhoto, coverPhoto, companyLogo, virtualBg, ...rest } = card
+    // Save only text fields — skip large base64 images to prevent localStorage overflow
+    localStorage.setItem('smartcard_editor', JSON.stringify({
+      ...rest,
+      virtualBg: { ...virtualBg, custom: '' },
+    }))
   }, [card])
 
   const update = useCallback((key, value) =>
