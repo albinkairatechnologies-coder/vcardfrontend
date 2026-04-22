@@ -94,7 +94,7 @@ export default function EditorPublicCard() {
   const coverPhotoUrl = coverFile ? `${uploadsBase}${coverFile}` : ''
   const logoUrl = logoFile ? `${uploadsBase}${logoFile}` : ''
 
-  const saveVCF = async () => {
+  const saveVCF = () => {
     const phone = Array.isArray(card.links) ? card.links.find((l) => l.type === 'phone')?.url || '' : ''
     const website = Array.isArray(card.links) ? card.links.find((l) => l.type === 'website')?.url || '' : ''
 
@@ -111,28 +111,12 @@ export default function EditorPublicCard() {
     ].filter(Boolean)
 
     const vcfContent = lines.join('\r\n') + '\r\n'
-    const blob = new Blob([vcfContent], { type: 'text/vcard' })
-    const file = new File([blob], `${(displayName || 'contact').replace(/\s+/g, '-').toLowerCase()}.vcf`, { type: 'text/vcard' })
-
-    // Android Chrome — share vcf file directly opens native contact import
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: displayName })
-        return
-      } catch (e) {
-        if (e.name !== 'AbortError') {
-          // fallthrough to download
-        } else {
-          return
-        }
-      }
-    }
-
-    // iOS Safari — clicking an <a> with text/vcard href auto-prompts "Create New Contact"
+    // Use text/x-vcard for better Android compatibility
+    const blob = new Blob([vcfContent], { type: 'text/x-vcard' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = file.name
+    a.download = `${(displayName || 'contact').replace(/\s+/g, '-').toLowerCase()}.vcf`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
