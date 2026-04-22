@@ -107,8 +107,9 @@ export default function ProfileEditor() {
     messaging.forEach(key => { socialData[key] = linkByType(key) })
     business.forEach(key => { socialData[key] = linkByType(key) })
 
-    // Single batch update — one localStorage save with ALL fields including images
-    setAll({
+    // Single batch update -- one localStorage save with ALL fields including images
+    // Ensure server URLs are properly constructed and saved
+    const cardData = {
       name:           metaByType('meta_name')           || payload.name    || '',
       jobTitle:       payload.title                     || '',
       department:     metaByType('meta_department')     || '',
@@ -137,7 +138,9 @@ export default function ProfileEditor() {
         custom:  vBgFile ? `${uploadsBase}${vBgFile}` : '',
       },
       ...socialData,
-    })
+    }
+    
+    setAll(cardData)
   }
 
   const toApiLinks = () => {
@@ -298,6 +301,32 @@ export default function ProfileEditor() {
   }
 
   useEffect(() => {
+    // Clean up any localhost URLs from localStorage on component mount
+    const cleanupLocalStorage = () => {
+      try {
+        const saved = localStorage.getItem('smartcard_editor')
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          const isLocalhostUrl = (url) => url && (url.includes('localhost') || url.includes('127.0.0.1') || url.startsWith('blob:'))
+          let hasLocalhostUrls = false
+          
+          if (isLocalhostUrl(parsed.profilePhoto)) { parsed.profilePhoto = ''; hasLocalhostUrls = true }
+          if (isLocalhostUrl(parsed.coverPhoto)) { parsed.coverPhoto = ''; hasLocalhostUrls = true }
+          if (isLocalhostUrl(parsed.companyLogo)) { parsed.companyLogo = ''; hasLocalhostUrls = true }
+          if (isLocalhostUrl(parsed.virtualBg?.custom)) { parsed.virtualBg.custom = ''; hasLocalhostUrls = true }
+          
+          if (hasLocalhostUrls) {
+            localStorage.setItem('smartcard_editor', JSON.stringify(parsed))
+          }
+        }
+      } catch (e) {
+        // If localStorage is corrupted, clear it
+        localStorage.removeItem('smartcard_editor')
+      }
+    }
+    
+    cleanupLocalStorage()
+    
     const loadServerCard = async () => {
       try {
         const res = await api.get('/cards')
