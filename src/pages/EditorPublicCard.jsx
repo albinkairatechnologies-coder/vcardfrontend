@@ -68,7 +68,7 @@ export default function EditorPublicCard() {
   const vBgEnabled = metaByType('meta_vBg_enabled') === 'true'
   const vBgPreset = metaByType('meta_vBg_preset') || ''
   const vBgCustomFile = metaByType('meta_vBg_custom') || ''
-  const uploadsBase = 'https://kairatechnologies.co.in/demo/vcard/uploads/'
+  const uploadsBase = `${import.meta.env.VITE_API_BASE?.replace('/api', '') || 'https://kairatechnologies.co.in/demo/vcard'}/uploads/`
 
   const bgStyle = vBgEnabled
     ? vBgCustomFile
