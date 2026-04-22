@@ -176,22 +176,13 @@ export default function ProfileEditor() {
 
   const uploadImageIfNeeded = async (value) => {
     if (!value) return ''
+    // Already a server filename (no slashes) — use as-is
+    if (!value.includes('/') && !value.startsWith('data:')) return value
+    // Already a server URL — extract filename only, no re-upload
+    if (value.startsWith('http')) return extractUploadFilename(value)
+    // base64 — upload to server
     if (value.startsWith('data:')) {
       const blob = await (await fetch(value)).blob()
-      const ext = blob.type.includes('png') ? 'png' : blob.type.includes('webp') ? 'webp' : 'jpg'
-      const file = new File([blob], `upload.${ext}`, { type: blob.type || 'image/jpeg' })
-      const formData = new FormData()
-      formData.append('photo', file)
-      const res = await api.post('/cards/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      return res.data.filename || ''
-    }
-    if (value.startsWith('http')) {
-      const existing = extractUploadFilename(value)
-      if (existing) return existing
-      const response = await fetch(value)
-      const blob = await response.blob()
       const ext = blob.type.includes('png') ? 'png' : blob.type.includes('webp') ? 'webp' : 'jpg'
       const file = new File([blob], `upload.${ext}`, { type: blob.type || 'image/jpeg' })
       const formData = new FormData()
