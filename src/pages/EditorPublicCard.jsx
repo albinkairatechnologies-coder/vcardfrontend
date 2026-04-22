@@ -237,7 +237,7 @@ export default function EditorPublicCard() {
               Share
             </button>
             <button onClick={saveVCF} className="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all text-center" style={{ borderColor: themeColor, color: themeColor }}>
-              {ctaLabel || 'Save Contact'}
+              Save Contact
             </button>
           </div>
 
