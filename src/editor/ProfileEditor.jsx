@@ -92,7 +92,7 @@ export default function ProfileEditor() {
     const safeLinks = Array.isArray(payload.links) ? payload.links : []
     const linkByType = (type) => safeLinks.find((l) => l.type === type)?.url || ''
     const metaByType = (type) => safeLinks.find((l) => l.type === type)?.url || ''
-    const uploadsBase = 'http://localhost/smartcard/backend/uploads/'
+    const uploadsBase = 'https://kairatechnologies.co.in/demo/vcard/uploads/'
     const profileFile = safeLinks.find((l) => l.type === 'meta_profile')?.url || payload.photo || ''
     const coverFile = safeLinks.find((l) => l.type === 'meta_cover')?.url || ''
     const logoFile = safeLinks.find((l) => l.type === 'meta_logo')?.url || ''
