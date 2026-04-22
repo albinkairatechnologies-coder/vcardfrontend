@@ -92,49 +92,51 @@ export default function ProfileEditor() {
     const safeLinks = Array.isArray(payload.links) ? payload.links : []
     const linkByType = (type) => safeLinks.find((l) => l.type === type)?.url || ''
     const metaByType = (type) => safeLinks.find((l) => l.type === type)?.url || ''
-    const uploadsBase = 'https://kairatechnologies.co.in/demo/vcard/uploads/'
+    // Store only filenames in state — full URLs built at render time in CardPreview
     const profileFile = safeLinks.find((l) => l.type === 'meta_profile')?.url || payload.photo || ''
-    const coverFile = safeLinks.find((l) => l.type === 'meta_cover')?.url || ''
-    const logoFile = safeLinks.find((l) => l.type === 'meta_logo')?.url || ''
-    const linkLabel = safeLinks.find((l) => l.type === 'custom')?.label || ''
-    const linkUrl = safeLinks.find((l) => l.type === 'custom')?.url || ''
-    const social = ['twitter', 'instagram', 'threads', 'linkedin', 'facebook', 'youtube', 'snapchat', 'tiktok', 'twitch', 'yelp']
-    const messaging = ['whatsapp', 'signal', 'discord', 'skype', 'telegram']
-    const business = ['github', 'calendly']
+    const coverFile   = safeLinks.find((l) => l.type === 'meta_cover')?.url || ''
+    const logoFile    = safeLinks.find((l) => l.type === 'meta_logo')?.url || ''
+    const vBgFile     = safeLinks.find((l) => l.type === 'meta_vBg_custom')?.url || ''
+    const linkLabel   = safeLinks.find((l) => l.type === 'custom')?.label || ''
+    const linkUrl     = safeLinks.find((l) => l.type === 'custom')?.url || ''
+    const social      = ['twitter', 'instagram', 'threads', 'linkedin', 'facebook', 'youtube', 'snapchat', 'tiktok', 'twitch', 'yelp']
+    const messaging   = ['whatsapp', 'signal', 'discord', 'skype', 'telegram']
+    const business    = ['github', 'calendly']
+    const uploadsBase = 'https://kairatechnologies.co.in/demo/vcard/uploads/'
 
-    update('name', metaByType('meta_name') || payload.name || '')
-    update('jobTitle', payload.title || '')
-    update('department', metaByType('meta_department') || '')
+    update('name',           metaByType('meta_name')           || payload.name    || '')
+    update('jobTitle',       payload.title                     || '')
+    update('department',     metaByType('meta_department')     || '')
     update('accreditations', metaByType('meta_accreditations') || '')
-    update('companyName', metaByType('meta_company') || payload.company || '')
-    update('headline', payload.bio || '')
-    update('profilePhoto', profileFile ? `${uploadsBase}${profileFile}` : '')
-    update('coverPhoto', coverFile ? `${uploadsBase}${coverFile}` : '')
-    update('companyLogo', logoFile ? `${uploadsBase}${logoFile}` : '')
-    update('email', metaByType('meta_email') || payload.email || '')
-    update('phone', linkByType('phone'))
-    update('companyUrl', linkByType('website'))
+    update('companyName',    metaByType('meta_company')        || payload.company || '')
+    update('headline',       payload.bio                       || '')
+    // Store full URL so preview shows image immediately
+    update('profilePhoto',   profileFile ? `${uploadsBase}${profileFile}` : '')
+    update('coverPhoto',     coverFile   ? `${uploadsBase}${coverFile}`   : '')
+    update('companyLogo',    logoFile    ? `${uploadsBase}${logoFile}`    : '')
+    update('email',          metaByType('meta_email')          || payload.email   || '')
+    update('phone',          linkByType('phone'))
+    update('companyUrl',     linkByType('website'))
     update('customLinkLabel', linkLabel)
-    update('customLink', linkUrl)
-    update('address', metaByType('meta_address') || '')
-    update('leadSource', metaByType('meta_leadSource') || '')
-    update('leadTags', metaByType('meta_leadTags') || '')
-    update('followUpDate', metaByType('meta_followUpDate') || '')
-    update('meetingNote', metaByType('meta_meetingNote') || '')
-    update('ctaLabel', metaByType('meta_ctaLabel') || '')
-    update('ctaUrl', metaByType('meta_ctaUrl') || '')
-    update('themeColor', metaByType('meta_themeColor') || payload.theme || '#6366f1')
-    
-    const vBgEnabled = metaByType('meta_vBg_enabled') === 'true'
-    const vBgPreset = metaByType('meta_vBg_preset') || ''
-    const vBgCustomFile = metaByType('meta_vBg_custom') || ''
-    updateNested('virtualBg', 'enabled', vBgEnabled)
-    updateNested('virtualBg', 'preset', vBgPreset)
-    updateNested('virtualBg', 'custom', vBgCustomFile ? `${uploadsBase}${vBgCustomFile}` : '')
+    update('customLink',     linkUrl)
+    update('address',        metaByType('meta_address')        || '')
+    update('leadSource',     metaByType('meta_leadSource')     || '')
+    update('leadTags',       metaByType('meta_leadTags')       || '')
+    update('followUpDate',   metaByType('meta_followUpDate')   || '')
+    update('meetingNote',    metaByType('meta_meetingNote')    || '')
+    update('ctaLabel',       metaByType('meta_ctaLabel')       || '')
+    update('ctaUrl',         metaByType('meta_ctaUrl')         || '')
+    update('themeColor',     metaByType('meta_themeColor')     || payload.theme   || '#6366f1')
 
-    social.forEach((key) => update(key, linkByType(key)))
+    const vBgEnabled = metaByType('meta_vBg_enabled') === 'true'
+    const vBgPreset  = metaByType('meta_vBg_preset')  || ''
+    updateNested('virtualBg', 'enabled', vBgEnabled)
+    updateNested('virtualBg', 'preset',  vBgPreset)
+    updateNested('virtualBg', 'custom',  vBgFile ? `${uploadsBase}${vBgFile}` : '')
+
+    social.forEach((key)    => update(key, linkByType(key)))
     messaging.forEach((key) => update(key, linkByType(key)))
-    business.forEach((key) => update(key, linkByType(key)))
+    business.forEach((key)  => update(key, linkByType(key)))
   }
 
   const toApiLinks = () => {
@@ -168,31 +170,25 @@ export default function ProfileEditor() {
   const extractUploadFilename = (value) => {
     if (!value) return ''
     const marker = '/uploads/'
-    if (value.includes(marker)) {
-      return value.split(marker).pop() || ''
-    }
-    return ''
+    return value.includes(marker) ? value.split(marker).pop() : value
   }
 
   const uploadImageIfNeeded = async (value) => {
     if (!value) return ''
-    // Already a server filename (no slashes) — use as-is
-    if (!value.includes('/') && !value.startsWith('data:')) return value
-    // Already a server URL — extract filename only, no re-upload
+    // Already a plain filename — use as-is
+    if (!value.startsWith('data:') && !value.startsWith('http')) return value
+    // Already a server URL — extract filename only, never re-upload
     if (value.startsWith('http')) return extractUploadFilename(value)
-    // base64 — upload to server
-    if (value.startsWith('data:')) {
-      const blob = await (await fetch(value)).blob()
-      const ext = blob.type.includes('png') ? 'png' : blob.type.includes('webp') ? 'webp' : 'jpg'
-      const file = new File([blob], `upload.${ext}`, { type: blob.type || 'image/jpeg' })
-      const formData = new FormData()
-      formData.append('photo', file)
-      const res = await api.post('/cards/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      return res.data.filename || ''
-    }
-    return extractUploadFilename(value)
+    // base64 — upload to server and return filename
+    const blob = await (await fetch(value)).blob()
+    const ext = blob.type.includes('png') ? 'png' : blob.type.includes('webp') ? 'webp' : 'jpg'
+    const file = new File([blob], `upload.${ext}`, { type: blob.type || 'image/jpeg' })
+    const formData = new FormData()
+    formData.append('photo', file)
+    const res = await api.post('/cards/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return res.data.filename || ''
   }
 
   const saveToBackend = async () => {
