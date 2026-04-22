@@ -43,7 +43,7 @@ function TextareaField({ label, name, value, onChange, placeholder, maxLength })
 }
 
 export default function ProfileEditor() {
-  const { card, update, updateNested, addCustomField, removeCustomField, updateCustomField, reorderCustomFields } = useCardStore()
+  const { card, update, setAll, updateNested, addCustomField, removeCustomField, updateCustomField, reorderCustomFields } = useCardStore()
   const previewRef = useRef()
   const importRef = useRef()
   const [previewVisible, setPreviewVisible] = useState(true)
@@ -92,7 +92,8 @@ export default function ProfileEditor() {
     const safeLinks = Array.isArray(payload.links) ? payload.links : []
     const linkByType = (type) => safeLinks.find((l) => l.type === type)?.url || ''
     const metaByType = (type) => safeLinks.find((l) => l.type === type)?.url || ''
-    const uploadsBase = 'https://kairatechnologies.co.in/demo/vcard/uploads/'
+    const baseUrl = import.meta.env.VITE_API_BASE?.replace('/api', '') || 'https://kairatechnologies.co.in/demo/vcard'
+    const uploadsBase = `${baseUrl}/uploads/`
     const profileFile = safeLinks.find((l) => l.type === 'meta_profile')?.url || payload.photo || ''
     const coverFile   = safeLinks.find((l) => l.type === 'meta_cover')?.url || ''
     const logoFile    = safeLinks.find((l) => l.type === 'meta_logo')?.url || ''

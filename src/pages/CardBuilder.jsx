@@ -45,7 +45,8 @@ export default function CardBuilder() {
       setLinks(c.links || [])
       if (c.photo) {
         setExistingPhoto(c.photo)
-        setPhotoPreview(`${import.meta.env.VITE_API_BASE || 'https://kairatechnologies.co.in/demo/vcard'}/uploads/${c.photo}`)
+        const baseUrl = import.meta.env.VITE_API_BASE?.replace('/api', '') || 'https://kairatechnologies.co.in/demo/vcard'
+        setPhotoPreview(`${baseUrl}/uploads/${c.photo}`)
       }
     }).catch(() => {})
   }, []) // eslint-disable-line

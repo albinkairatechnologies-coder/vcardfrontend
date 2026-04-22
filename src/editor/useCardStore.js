@@ -73,6 +73,9 @@ export function useCardStore() {
   const update = useCallback((key, value) =>
     setCard(prev => ({ ...prev, [key]: value })), [])
 
+  const setAll = useCallback((data) =>
+    setCard(prev => ({ ...prev, ...data })), [])
+
   const updateNested = useCallback((key, subKey, value) =>
     setCard(prev => ({ ...prev, [key]: { ...prev[key], [subKey]: value } })), [])
 
@@ -109,5 +112,5 @@ export function useCardStore() {
       customFields: { ...prev.customFields, [section]: fields },
     })), [])
 
-  return { card, update, updateNested, addCustomField, removeCustomField, updateCustomField, reorderCustomFields }
+  return { card, update, setAll, updateNested, addCustomField, removeCustomField, updateCustomField, reorderCustomFields }
 }
