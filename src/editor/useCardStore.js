@@ -61,12 +61,13 @@ export function useCardStore() {
 
   useEffect(() => {
     const { profilePhoto, coverPhoto, companyLogo, virtualBg, ...rest } = card
+    // Only save http URLs and data: URLs (for unsaved uploads), clear blob: URLs
     localStorage.setItem('smartcard_editor', JSON.stringify({
       ...rest,
-      profilePhoto: profilePhoto?.startsWith('http') ? profilePhoto : '',
-      coverPhoto: coverPhoto?.startsWith('http') ? coverPhoto : '',
-      companyLogo: companyLogo?.startsWith('http') ? companyLogo : '',
-      virtualBg: { ...virtualBg, custom: virtualBg?.custom?.startsWith('http') ? virtualBg.custom : '' },
+      profilePhoto: (profilePhoto?.startsWith('http') || profilePhoto?.startsWith('data:')) ? profilePhoto : '',
+      coverPhoto: (coverPhoto?.startsWith('http') || coverPhoto?.startsWith('data:')) ? coverPhoto : '',
+      companyLogo: (companyLogo?.startsWith('http') || companyLogo?.startsWith('data:')) ? companyLogo : '',
+      virtualBg: { ...virtualBg, custom: (virtualBg?.custom?.startsWith('http') || virtualBg?.custom?.startsWith('data:')) ? virtualBg.custom : '' },
     }))
   }, [card])
 

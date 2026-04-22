@@ -258,6 +258,20 @@ export default function ProfileEditor() {
           }
         }
       }
+      
+      // CRITICAL FIX: Update local state with server URLs after successful save
+      const baseUrl = import.meta.env.VITE_API_BASE?.replace('/api', '') || 'https://kairatechnologies.co.in/demo/vcard'
+      const uploadsBase = `${baseUrl}/uploads/`
+      setAll({
+        profilePhoto: profileFilename ? `${uploadsBase}${profileFilename}` : card.profilePhoto,
+        coverPhoto: coverFilename ? `${uploadsBase}${coverFilename}` : card.coverPhoto,
+        companyLogo: logoFilename ? `${uploadsBase}${logoFilename}` : card.companyLogo,
+        virtualBg: {
+          ...card.virtualBg,
+          custom: virtualBgFilename ? `${uploadsBase}${virtualBgFilename}` : card.virtualBg?.custom || '',
+        },
+      })
+      
       alert('Card saved to server successfully!')
     } catch (err) {
       alert(err.response?.data?.error || 'Failed to save card to server.')
