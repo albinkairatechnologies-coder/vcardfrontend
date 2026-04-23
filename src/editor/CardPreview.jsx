@@ -13,10 +13,12 @@ const ICON_MAP = {
 }
 
 export default function CardPreview({ card }) {
-  const bgStyle = card.virtualBg.enabled
+  const bgStyle = card.virtualBg?.enabled
     ? card.virtualBg.custom
       ? { backgroundImage: `url(${card.virtualBg.custom})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-      : { background: card.virtualBg.preset ? `linear-gradient(135deg, ${card.virtualBg.preset})` : '#f3f4f6' }
+      : card.virtualBg.preset
+        ? { background: card.virtualBg.preset }
+        : { background: '#f3f4f6' }
     : { background: '#f3f4f6' }
 
   const fields = [

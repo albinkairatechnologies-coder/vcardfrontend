@@ -25,7 +25,9 @@ export default function CardPreview({ card = {} }) {
   const bgStyle = vBgEnabled
     ? vBgCustomFile
       ? { backgroundImage: `url(${uploadsBase}${vBgCustomFile})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-      : { background: vBgPreset ? `linear-gradient(135deg, ${vBgPreset})` : '#f3f4f6' }
+      : vBgPreset
+        ? { background: vBgPreset }
+        : { background: '#f3f4f6' }
     : { background: '#f3f4f6' }
 
   const profileFile = metaByType('meta_profile')

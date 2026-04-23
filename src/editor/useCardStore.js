@@ -19,7 +19,7 @@ export const VIRTUAL_BG_PRESETS = [
 const DEFAULT_CARD = {
   coverPhoto: '', profilePhoto: '', companyLogo: '',
   themeColor: '#6366f1',
-  virtualBg: { enabled: false, preset: 'gradient', custom: '' },
+  virtualBg: { enabled: false, preset: '', custom: '' },
   name: '', jobTitle: '', department: '', companyName: '',
   accreditations: '', headline: '',
   email: '', phone: '', companyUrl: '', customLink: '',
