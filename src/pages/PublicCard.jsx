@@ -116,7 +116,7 @@ export default function PublicCard() {
 
           {/* Cover photo */}
           {coverUrl
-            ? <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${coverUrl})` }} />
+            ? <img src={coverUrl} alt="Cover" className="h-32 w-full object-cover" loading="lazy" />
             : <div className={`bg-gradient-to-br ${theme.gradient} h-24`} />
           }
 
@@ -125,10 +125,10 @@ export default function PublicCard() {
             {/* Profile photo + logo — matches editor layout exactly */}
             <div className="relative pt-6 pb-2">
               {logoUrl && (
-                <img src={logoUrl} alt="logo" className="absolute top-4 right-0 w-12 h-12 object-contain rounded-lg bg-white/80 border border-gray-100 p-1" />
+                <img src={logoUrl} alt="logo" className="absolute top-4 right-0 w-12 h-12 object-contain rounded-lg bg-white/80 border border-gray-100 p-1" loading="lazy" />
               )}
               {photoUrl ? (
-                <img src={photoUrl} alt={card.name} className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover" />
+                <img src={photoUrl} alt={card.name} className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover" loading="eager" />
               ) : (
                 <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl font-bold text-white" style={{ background: '#6366f1' }}>
                   {card.name?.[0]?.toUpperCase()}
