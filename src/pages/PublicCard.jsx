@@ -34,6 +34,7 @@ export default function PublicCard() {
   const [notFound, setNotFound] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', mobile: '', message: '' })
   const [formStatus, setFormStatus] = useState('')  // '', 'sending', 'sent', 'error'
 
@@ -59,6 +60,10 @@ export default function PublicCard() {
       })
       setFormStatus('sent')
       setForm({ name: '', email: '', mobile: '', message: '' })
+      setTimeout(() => {
+        setShowForm(false)
+        setFormStatus('')
+      }, 2000)
     } catch {
       setFormStatus('error')
     }
@@ -185,51 +190,70 @@ export default function PublicCard() {
               </button>
             </div>
 
-            {/* Contact form */}
+            {/* Contact form toggle */}
             <div className="border-t border-gray-100 pt-4">
-              <p className="text-sm font-semibold text-gray-700 mb-3">Send a message</p>
-              {formStatus === 'sent' ? (
-                <p className="text-green-600 text-sm text-center py-4">✅ Message sent!</p>
+              {!showForm ? (
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white py-3 rounded-xl text-sm font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md"
+                >
+                  📩 Share your details
+                </button>
               ) : (
-                <form onSubmit={handleFormSubmit} className="space-y-2.5">
-                  <input
-                    required
-                    placeholder="Your name"
-                    value={form.name}
-                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400"
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400"
-                  />
-                  <input
-                    placeholder="Mobile"
-                    value={form.mobile}
-                    onChange={e => setForm(f => ({ ...f, mobile: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400"
-                  />
-                  <textarea
-                    required
-                    rows={3}
-                    placeholder="Message"
-                    value={form.message}
-                    onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400 resize-none"
-                  />
-                  {formStatus === 'error' && <p className="text-red-500 text-xs">Failed to send. Try again.</p>}
-                  <button
-                    type="submit"
-                    disabled={formStatus === 'sending'}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60"
-                  >
-                    {formStatus === 'sending' ? 'Sending…' : 'Send Message'}
-                  </button>
-                </form>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-gray-700">Send a message</p>
+                    <button
+                      onClick={() => setShowForm(false)}
+                      className="text-gray-400 hover:text-gray-600 text-xl"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  {formStatus === 'sent' ? (
+                    <p className="text-green-600 text-sm text-center py-4">✅ Message sent!</p>
+                  ) : (
+                    <form onSubmit={handleFormSubmit} className="space-y-2.5">
+                      <input
+                        required
+                        placeholder="Your name"
+                        value={form.name}
+                        onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400"
+                      />
+                      <input
+                        type="email"
+                        required
+                        placeholder="Email"
+                        value={form.email}
+                        onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400"
+                      />
+                      <input
+                        placeholder="Mobile"
+                        value={form.mobile}
+                        onChange={e => setForm(f => ({ ...f, mobile: e.target.value }))}
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400"
+                      />
+                      <textarea
+                        required
+                        rows={3}
+                        placeholder="Message"
+                        value={form.message}
+                        onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400 resize-none"
+                      />
+                      {formStatus === 'error' && <p className="text-red-500 text-xs">Failed to send. Try again.</p>}
+                      <button
+                        type="submit"
+                        disabled={formStatus === 'sending'}
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60"
+                      >
+                        {formStatus === 'sending' ? 'Sending…' : 'Send Message'}
+                      </button>
+                    </form>
+                  )}
+                </div>
               )}
             </div>
 
